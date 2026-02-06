@@ -1,0 +1,37 @@
+{
+    "name": "rifkiard/gatekeeper",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rifki Ardiansyah",
+            "email": "rifki.ardiansyah@ai.astra.co.id"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "laravel/socialite": "^5.16",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/auth": "^11.0|^12.0",
+        "illuminate/http": "^11.0|^12.0",
+        "illuminate/session": "^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0",
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rifkiard\\Gatekeeper\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rifkiard\\Gatekeeper\\GatekeeperClientServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
