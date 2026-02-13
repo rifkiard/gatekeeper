@@ -10,14 +10,14 @@ class GatekeeperUserProvider implements UserProvider
 {
     public function retrieveByToken($identifier, $token)
     {
-        $cacheKey = 'gk_user_' . md5($token);
-
-        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($token) {
+        return \Illuminate\Support\Facades\Cache::remember(Gatekeeper::userAuthCacheKey($token), 300, function () use ($token) {
             $response = \Illuminate\Support\Facades\Http::withoutVerifying()
                 ->withToken($token)
-                ->get(config('services.gatekeeper.base_url') . '/api/user');
+                ->get(Gatekeeper::baseUrl() . '/api/user', [
+                    'client_id' => Gatekeeper::clientId(),
+                ]);
 
-            if ($response->successful()) {
+            if ($response->successful() && $response->json()) {
                 return new GatekeeperAuthenticatableUser($response->json());
             }
 
@@ -39,14 +39,15 @@ class GatekeeperUserProvider implements UserProvider
         return $user;
     }
 
-    public function updateSetting($token, array $data)
+    public function updateSetting(array $data)
     {
+        $token =  Gatekeeper::authToken();
+
         $response = \Illuminate\Support\Facades\Http::withoutVerifying()
-            ->withToken($token)
-            ->put(config('services.gatekeeper.base_url') . '/api/user/setting', $data);
+            ->put(Gatekeeper::baseUrl() . '/api/user/setting', $data);
 
         if ($response->successful()) {
-            \Illuminate\Support\Facades\Cache::forget('gk_user_' . md5($token));
+            cache()->forget(Gatekeeper::userAuthCacheKey($token));
             return $this->retrieveByToken(null, $token);
         }
 

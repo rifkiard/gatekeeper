@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GatekeeperGuard implements StatefulGuard
 {
@@ -31,7 +32,7 @@ class GatekeeperGuard implements StatefulGuard
         }
 
         // Ambil gatekeeper_token yang disimpan di session pas callback SSO
-        $token = $this->request->session()->get('gatekeeper_token');
+        $token = Gatekeeper::authToken();
 
         if ($token) {
             // Panggil GatekeeperUserProvider->retrieveByToken
@@ -60,10 +61,10 @@ class GatekeeperGuard implements StatefulGuard
      */
     public function logout()
     {
+
         $this->user = null;
-        $this->request->session()->forget('gatekeeper_token');
-        $this->request->session()->invalidate();
-        $this->request->session()->regenerateToken();
+
+        Gatekeeper::logout();
     }
 
     // --- Method Wajib Interface StatefulGuard (Isi minimal agar Fortify tidak komplain) ---

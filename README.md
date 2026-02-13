@@ -87,7 +87,7 @@ Route::get('/auth/callback', function () {
     $user = Socialite::driver('gatekeeper')->user();
 
     // Store the access token in session
-    session(['gatekeeper_token' => $user->token]);
+    session(['gk_token' => $user->token]);
 
     return redirect('/dashboard');
 });
@@ -108,7 +108,7 @@ Route::middleware('auth')->get('/dashboard', function () {
 ```php
 Route::post('/logout', function () {
     auth()->logout();
-    session()->forget('gatekeeper_token');
+    session()->forget('gk_token');
 
     return redirect('/');
 });
@@ -176,7 +176,7 @@ class EnsureGatekeeperAuth
 ```php
 use Illuminate\Support\Facades\Auth;
 
-$token = session('gatekeeper_token');
+$token = session('gk_token');
 
 if ($token) {
     $user = Auth::guard('web')->setToken($token)->user();
