@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class Gatekeeper
 {
+    public static function setAuthToken($token)
+    {
+        session()->put('gk_token', $token);
+    }
+
     public static function baseUrl()
     {
         return config('services.gatekeeper.base_url');
