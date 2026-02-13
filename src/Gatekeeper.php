@@ -130,7 +130,7 @@ class Gatekeeper
 
     public static function callback()
     {
-        return Socialite::driver('gatekeeper')
+        $user = Socialite::driver('gatekeeper')
             ->user();
         self::setAuthToken($user->token);
     }
