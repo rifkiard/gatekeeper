@@ -5,6 +5,7 @@ namespace Rifkiard\Gatekeeper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Socialite;
 
 class Gatekeeper
 {
@@ -113,5 +114,24 @@ class Gatekeeper
         return $permissions->contains(function ($perm) use ($arrTarget) {
             return $perm->key == $arrTarget[0] && $perm->{$arrTarget[1]} == true;
         });
+    }
+
+    public static function redirect()
+    {
+        return Socialite::driver('gatekeeper')
+            ->redirect();
+    }
+
+    public static function user()
+    {
+        return Socialite::driver('gatekeeper')
+            ->user();
+    }
+
+    public static function callback()
+    {
+        return Socialite::driver('gatekeeper')
+            ->user();
+        self::setAuthToken($user->token);
     }
 }
