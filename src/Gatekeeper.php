@@ -47,10 +47,16 @@ class Gatekeeper
 
     public static function permissions()
     {
-        return collect(Cache::remember(self::permissionsCacheKey(Auth::id()), 300, function () {
+        $token = self::authToken();
+
+        if (!$token) {
+            return collect([]);
+        }
+
+        return collect(Cache::remember(self::permissionsCacheKey($token), 300, function () use ($token) {
 
             $response = Http::withoutVerifying()
-                ->withToken(self::authToken())
+                ->withToken($token)
                 ->withHeader("X-GK-Client-ID", self::clientId())
                 ->get(self::baseUrl() . '/api/user/permissions');
 
