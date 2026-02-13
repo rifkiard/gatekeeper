@@ -76,17 +76,17 @@ class Gatekeeper
         session()->regenerateToken();
     }
 
-    public static function application(?string $clientId = null)
+    public static function application()
     {
 
-        return Cache::remember(self::appCacheKey(), 300, function () use ($clientId) {
+        return Cache::remember(self::appCacheKey(), 300, function () {
             $http = Http::withOptions([
                 'verify' => false,
             ]);
 
             $response = $http->get(
-                config('services.gatekeeper.base_url') . '/api/application',
-                ['client_id' => $clientId]
+                self::baseUrl() . '/api/application',
+                ['client_id' => self::clientId()]
             );
 
             if ($response->successful()) {
