@@ -40,6 +40,11 @@ class Gatekeeper
         return self::clientId() . ":app";
     }
 
+    public static function userAppsCacheKey($token)
+    {
+        return self::clientId() . ":user_apps:" . md5($token);
+    }
+
     public static function permissionsCacheKey($token)
     {
         return   self::clientId() . ':perm:' . md5($token);
@@ -105,11 +110,11 @@ class Gatekeeper
 
     public static function userApplications()
     {
-        return Cache::remember(self::appCacheKey(), 300, function () {
+        $token =  Gatekeeper::authToken();
+        return Cache::remember(self::userAppsCacheKey($token), 300, function () use ($token) {
             $http = Http::withOptions([
                 'verify' => false,
             ]);
-            $token =  Gatekeeper::authToken();
 
             $response = $http->withToken($token)->get(
                 self::baseUrl() . '/api/user/applications',
