@@ -82,7 +82,7 @@ class Gatekeeper
         session()->regenerateToken();
     }
 
-    public static function applications()
+    public static function application()
     {
 
         return Cache::remember(self::appCacheKey(), 300, function () {
@@ -102,6 +102,27 @@ class Gatekeeper
             return null;
         });
     }
+
+    public static function userApplications()
+    {
+        return Cache::remember(self::appCacheKey(), 300, function () {
+            $http = Http::withOptions([
+                'verify' => false,
+            ]);
+            $token =  Gatekeeper::authToken();
+
+            $response = $http->withToken($token)->get(
+                self::baseUrl() . '/api/user/applications',
+            );
+
+            if ($response->successful()) {
+                return $response->object();
+            }
+
+            return null;
+        });
+    }
+
 
     public static function hasPermission(string $permission): bool
     {
