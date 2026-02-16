@@ -172,6 +172,7 @@ class Gatekeeper
         $token =  Gatekeeper::authToken();
 
         $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+            ->withToken($token)
             ->put(Gatekeeper::baseUrl() . '/api/user/setting', $data);
 
         if ($response->successful()) {
