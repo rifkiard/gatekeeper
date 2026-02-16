@@ -62,9 +62,8 @@ class GatekeeperGuard implements StatefulGuard
     public function logout()
     {
 
-        $this->user = null;
-
         Gatekeeper::logout();
+        $this->user = null;
     }
 
     // --- Method Wajib Interface StatefulGuard (Isi minimal agar Fortify tidak komplain) ---
