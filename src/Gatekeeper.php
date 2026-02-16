@@ -80,8 +80,10 @@ class Gatekeeper
         if ($token) {
             cache()->forget(Gatekeeper::userAuthCacheKey($token));
             cache()->forget(Gatekeeper::permissionsCacheKey($token));
+            cache()->forget(Gatekeeper::userAppsCacheKey($token));
         }
 
+        cache()->forget(self::appCacheKey());
         session()->forget('gk_token');
         session()->invalidate();
         session()->regenerateToken();
@@ -126,6 +128,23 @@ class Gatekeeper
 
             return null;
         });
+    }
+
+    public static function users()
+    {
+        $clientId = self::clientId();
+
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->get(self::baseUrl() . '/api/users', [
+            'client_id' => $clientId,
+        ]);
+
+        if ($response->successful()) {
+            return $response->object();
+        }
+
+        return [];
     }
 
 
