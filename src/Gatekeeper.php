@@ -140,4 +140,31 @@ class Gatekeeper
             ->user();
         self::setAuthToken($user->token);
     }
+
+    public static function updateSetting(array $data)
+    {
+        $token =  Gatekeeper::authToken();
+
+        $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+            ->put(Gatekeeper::baseUrl() . '/api/user/setting', $data);
+
+        if ($response->successful()) {
+            cache()->forget(Gatekeeper::userAuthCacheKey($token));
+            cache()->remember(Gatekeeper::userAuthCacheKey($token), 300, function () use ($token) {
+                $response = \Illuminate\Support\Facades\Http::withoutVerifying()
+                    ->withToken($token)
+                    ->get(Gatekeeper::baseUrl() . '/api/user', [
+                        'client_id' => Gatekeeper::clientId(),
+                    ]);
+
+                if ($response->successful() && $response->json()) {
+                    return new GatekeeperAuthenticatableUser($response->json());
+                }
+
+                return null;
+            });
+        }
+
+        return false;
+    }
 }
