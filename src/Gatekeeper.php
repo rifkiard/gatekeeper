@@ -82,7 +82,7 @@ class Gatekeeper
         session()->regenerateToken();
     }
 
-    public static function application()
+    public static function applications()
     {
 
         return Cache::remember(self::appCacheKey(), 300, function () {
